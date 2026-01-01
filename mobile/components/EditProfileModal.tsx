@@ -6,7 +6,10 @@ import {
   ActivityIndicator,
   ScrollView,
   TextInput,
+  Image,
+  Alert,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 interface EditProfileModalProps {
   isVisible: boolean;
@@ -17,8 +20,12 @@ interface EditProfileModalProps {
     bio: string;
     location: string;
   };
+  profilePictureUri?: string;
+  bannerImageUri?: string;
   saveProfile: () => void;
   updateFormField: (field: string, value: string) => void;
+  onProfilePictureSelect: () => void;
+  onBannerImageSelect: () => void;
   isUpdating: boolean;
 }
 
@@ -29,10 +36,13 @@ const EditProfileModal = ({
   onClose,
   saveProfile,
   updateFormField,
+  profilePictureUri,
+  bannerImageUri,
+  onProfilePictureSelect,
+  onBannerImageSelect,
 }: EditProfileModalProps) => {
   const handleSave = () => {
     saveProfile();
-    onClose();
   };
 
   return (
@@ -58,6 +68,41 @@ const EditProfileModal = ({
       </View>
 
       <ScrollView className="flex-1 px-4 py-6">
+        {/* Banner Image Section */}
+        <View className="mb-6">
+          <Text className="text-gray-500 text-sm mb-2">Banner Image</Text>
+          <TouchableOpacity
+            onPress={onBannerImageSelect}
+            className="relative w-full h-32 bg-gray-100 rounded-lg overflow-hidden items-center justify-center"
+          >
+            {bannerImageUri ? (
+              <Image source={{ uri: bannerImageUri }} className="w-full h-full" />
+            ) : (
+              <View className="items-center">
+                <Feather name="image" size={24} color="#657786" />
+                <Text className="text-gray-500 text-sm mt-2">Tap to select banner</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Profile Picture Section */}
+        <View className="mb-6">
+          <Text className="text-gray-500 text-sm mb-2">Profile Picture</Text>
+          <TouchableOpacity
+            onPress={onProfilePictureSelect}
+            className="relative w-20 h-20 rounded-full bg-gray-100 items-center justify-center overflow-hidden"
+          >
+            {profilePictureUri ? (
+              <Image source={{ uri: profilePictureUri }} className="w-full h-full" />
+            ) : (
+              <View className="items-center justify-center w-full h-full">
+                <Feather name="camera" size={20} color="#657786" />
+              </View>
+            )}
+          </TouchableOpacity>
+        </View>
+
         <View className="space-y-4">
           <View>
             <Text className="text-gray-500 text-sm mb-2">First Name</Text>

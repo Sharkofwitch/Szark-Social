@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
+import { v2 as cloudinary } from "cloudinary";
 
 import { getAuth } from "@clerk/express";
 import { clerkClient } from "@clerk/express";
@@ -15,8 +16,48 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 
 export const updateProfile = asyncHandler(async (req, res) => {
   const { userId } = getAuth(req);
+  const updateData = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    bio: req.body.bio,
+    location: req.body.location,
+  };
 
-  const user = await User.findOneAndUpdate({ clerkId: userId }, req.body, { new: true });
+  // Handle profile picture upload
+  if (req.files?.profilePicture?.[0]) {
+    try {
+      const base64 = req.files.profilePicture[0].buffer.toString("base64");
+      const dataURI = `data:${req.files.profilePicture[0].mimetype};base64,${base64}`;
+      
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "szark-social/profiles",
+        resource_type: "auto",
+      });
+      
+      updateData.profilePicture = result.secure_url;
+    } catch (error) {
+      console.error("Profile picture upload error:", error);
+    }
+  }
+
+  // Handle banner image upload
+  if (req.files?.bannerImage?.[0]) {
+    try {
+      const base64 = req.files.bannerImage[0].buffer.toString("base64");
+      const dataURI = `data:${req.files.bannerImage[0].mimetype};base64,${base64}`;
+      
+      const result = await cloudinary.uploader.upload(dataURI, {
+        folder: "szark-social/banners",
+        resource_type: "auto",
+      });
+      
+      updateData.bannerImage = result.secure_url;
+    } catch (error) {
+      console.error("Banner image upload error:", error);
+    }
+  }
+
+  const user = await User.findOneAndUpdate({ clerkId: userId }, updateData, { new: true });
 
   if (!user) return res.status(404).json({ error: "User not found" });
 

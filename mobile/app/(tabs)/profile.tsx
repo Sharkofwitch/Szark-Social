@@ -36,6 +36,10 @@ const ProfileScreens = () => {
     updateFormField,
     isUpdating,
     refetch: refetchProfile,
+    profilePictureUri,
+    bannerImageUri,
+    pickProfilePicture,
+    pickBannerImage,
   } = useProfile();
 
   if (isLoading) {
@@ -77,6 +81,7 @@ const ProfileScreens = () => {
         <Image
           source={{
             uri:
+              bannerImageUri ||
               currentUser.bannerImage ||
               "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=400&fit=crop",
           }}
@@ -87,7 +92,7 @@ const ProfileScreens = () => {
         <View className="px-4 pb-4 border-b border-gray-100">
           <View className="flex-row justify-between items-end -mt-16 mb-4">
             <Image
-              source={{ uri: currentUser.profilePicture }}
+              source={{ uri: profilePictureUri || currentUser.profilePicture }}
               className="w-32 h-32 rounded-full border-4 border-white"
             />
             <TouchableOpacity
@@ -147,6 +152,10 @@ const ProfileScreens = () => {
         saveProfile={saveProfile}
         updateFormField={updateFormField}
         isUpdating={isUpdating}
+        profilePictureUri={profilePictureUri}
+        bannerImageUri={bannerImageUri}
+        onProfilePictureSelect={pickProfilePicture}
+        onBannerImageSelect={pickBannerImage}
       />
     </SafeAreaView>
   );

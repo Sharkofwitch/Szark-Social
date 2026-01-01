@@ -1,6 +1,7 @@
 import { Notification } from "@/types";
 import { formatDate } from "@/utils/formatters";
 import { Feather } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import { View, Text, Alert, Image, TouchableOpacity } from "react-native";
 
 interface NotificationCardProps {
@@ -9,6 +10,8 @@ interface NotificationCardProps {
 }
 
 const NotificationCard = ({ notification, onDelete }: NotificationCardProps) => {
+  const router = useRouter();
+
   const getNotificationText = () => {
     const name = `${notification.from.firstName} ${notification.from.lastName}`;
     switch (notification.type) {
@@ -47,10 +50,14 @@ const NotificationCard = ({ notification, onDelete }: NotificationCardProps) => 
     ]);
   };
 
+  const handleUserPress = () => {
+    router.push(`/user/${notification.from.username}`);
+  };
+
   return (
     <View className="border-b border-gray-100 bg-white">
       <View className="flex-row p-4">
-        <View className="relative mr-3">
+        <TouchableOpacity onPress={handleUserPress} className="relative mr-3">
           <Image
             source={{ uri: notification.from.profilePicture }}
             className="size-12 rounded-full"
@@ -59,11 +66,11 @@ const NotificationCard = ({ notification, onDelete }: NotificationCardProps) => 
           <View className="abolute -bottom-1 -right-1 size-6 bg-white items-center justify-center">
             {getNotificationIcon()}
           </View>
-        </View>
+        </TouchableOpacity>
 
         <View className="flex-1">
           <View className="flex-row items-start justify-between mb-1">
-            <View className="flex-1">
+            <TouchableOpacity onPress={handleUserPress} className="flex-1">
               <Text className="text-gray-900 text-base leading-5 mb-1">
                 <Text className="font-semibold">
                   {notification.from.firstName} {notification.from.lastName}
@@ -71,7 +78,7 @@ const NotificationCard = ({ notification, onDelete }: NotificationCardProps) => 
                 <Text className="text-gray-500"> @{notification.from.username}</Text>
               </Text>
               <Text className="text-gray-700 text-sm mb-2">{getNotificationText()}</Text>
-            </View>
+            </TouchableOpacity>
 
             <TouchableOpacity className="ml-2 p-1" onPress={handleDelete}>
               <Feather name="trash" size={16} color="#E0245E" />
